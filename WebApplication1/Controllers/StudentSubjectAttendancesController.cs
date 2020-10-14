@@ -48,8 +48,9 @@ namespace WebApplication1.Controllers
         // GET: StudentSubjectAttendances/Create
         public IActionResult Create()
         {
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "Id");
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id");
+
+            ViewData["StudentId"] = new SelectList(_context.Students, "Name", "Name");
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Name", "Name");
             return View();
         }
 
@@ -58,12 +59,16 @@ namespace WebApplication1.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SubjectId,StudentId,CountMissed")] StudentSubjectAttendance studentSubjectAttendance)
+        public async Task<IActionResult> Create([Bind("Id,SubjectName,StudentName,CountMissed")] StudentSubjectAttendance studentSubjectAttendance)
         {
 
             if (ModelState.IsValid)
             {
                 studentSubjectAttendance.Id = Guid.NewGuid();
+                studentSubjectAttendance.Student = _context.Students.FirstOrDefault(x=> x.Name == studentSubjectAttendance.StudentName);
+                studentSubjectAttendance.Subject = _context.Subjects.FirstOrDefault(x=> x.Name == studentSubjectAttendance.SubjectName);
+                studentSubjectAttendance.StudentId = studentSubjectAttendance.Student.Id;
+                studentSubjectAttendance.SubjectId = studentSubjectAttendance.Subject.Id;
                 _context.Add(studentSubjectAttendance);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -80,14 +85,15 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
+            var appDBContext = _context.Attendances.Include(s => s.Student).Include(s => s.Subject);
 
-            var studentSubjectAttendance = await _context.Attendances.FindAsync(id);
+            var studentSubjectAttendance = await appDBContext.FirstOrDefaultAsync(x=> x.Id == id);
             if (studentSubjectAttendance == null)
             {
                 return NotFound();
             }
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "Id", studentSubjectAttendance.StudentId);
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Id", studentSubjectAttendance.SubjectId);
+            ViewData["StudentId"] = new SelectList(_context.Students, "Name", "Name", studentSubjectAttendance.Student.Name);
+            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Name", "Name", studentSubjectAttendance.Subject.Name);
             return View(studentSubjectAttendance);
         }
 

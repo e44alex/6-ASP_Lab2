@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace WebApplication1.Models
 {
@@ -6,6 +7,7 @@ namespace WebApplication1.Models
     {
         public Guid Id { get; set; }
 
+        [DisplayName("Subject Name")]
         public string Name { get; set; }
     }
 }
