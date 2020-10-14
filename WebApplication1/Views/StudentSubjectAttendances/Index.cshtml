@@ -1,0 +1,61 @@
+﻿@model IEnumerable<WebApplication1.Models.StudentSubjectAttendance>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="container">
+    <form asp-action="Filter" method="get">
+        <input class="form-control" type="text" name="text"/>
+        <button class="btn btn-success" type="submit">Filter</button>
+    </form>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Student.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Student.GroupNumber)
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountMissed)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.GroupNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Subject.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountMissed)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
